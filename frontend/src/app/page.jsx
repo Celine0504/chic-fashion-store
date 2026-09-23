@@ -59,7 +59,7 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState(initialFallbackPicks);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products?featured=true')
+    fetch('/api/products?featured=true')
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {

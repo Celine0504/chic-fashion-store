@@ -65,6 +65,66 @@ const FALLBACK_CATALOG = [
     colors: ['#111111', '#e2d4c0'],
     sizes: ['36', '37', '38', '39', '40'],
   },
+  {
+    id: 7,
+    title: 'Sculptural Gold Hoop Earrings',
+    category_slug: 'accessories',
+    price: 1499.00,
+    description: '18k gold vermeil chunky teardrop sculptural hoop earrings with secure click closure.',
+    image_url: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=700&q=80',
+    colors: ['#d4af37', '#e5e4e2'],
+    sizes: ['One Size'],
+  },
+  {
+    id: 8,
+    title: 'Silk Twill Printed Scarf',
+    category_slug: 'accessories',
+    price: 1899.00,
+    description: '100% pure Mulberry silk twill square scarf featuring geometric hand-rolled hem.',
+    image_url: 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=700&q=80',
+    colors: ['#2b3a4a', '#8b5a2b'],
+    sizes: ['90x90 cm'],
+  },
+  {
+    id: 9,
+    title: 'Pleated Halter Maxi Dress',
+    category_slug: 'dresses',
+    price: 3799.00,
+    description: 'Floor-skimming micro-pleated halter neckline evening gown with a flowing silhouette.',
+    image_url: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=700&q=80',
+    colors: ['#c5a059', '#111111', '#800020'],
+    sizes: ['XS', 'S', 'M', 'L'],
+  },
+  {
+    id: 10,
+    title: 'Tailored Poplin Oversized Shirt',
+    category_slug: 'tops',
+    price: 1899.00,
+    description: 'Crisp organic cotton poplin button-down shirt with elongated cuffs and dropped shoulders.',
+    image_url: 'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=700&q=80',
+    colors: ['#ffffff', '#87ceeb', '#111111'],
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+  },
+  {
+    id: 11,
+    title: 'Pleated Tailored Bermuda Shorts',
+    category_slug: 'bottoms',
+    price: 1699.00,
+    description: 'Sophisticated knee-length tailored shorts in structured stretch twill with front pleats.',
+    image_url: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=700&q=80',
+    colors: ['#222222', '#d9cbb8'],
+    sizes: ['XS', 'S', 'M', 'L'],
+  },
+  {
+    id: 12,
+    title: 'Woven Leather Bucket Bag',
+    category_slug: 'bags',
+    price: 3999.00,
+    description: 'Artisanal hand-woven calfskin leather bucket bag with removable canvas drawstring pouch.',
+    image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=700&q=80',
+    colors: ['#8b5a2b', '#111111', '#e3d2c1'],
+    sizes: ['One Size'],
+  },
 ];
 
 export default function ProductDetailPage() {
@@ -79,36 +139,37 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/products/${id}`)
+    fetch(`/api/products?id=${id}`)
       .then((res) => {
         if (!res.ok) throw new Error('Product not found in API');
         return res.json();
       })
       .then((data) => {
-        setProduct(data);
-        const sizes = Array.isArray(data.sizes)
-          ? data.sizes
-          : typeof data.sizes === 'string'
-          ? JSON.parse(data.sizes)
-          : ['S', 'M', 'L'];
-        const colors = Array.isArray(data.colors)
-          ? data.colors
-          : typeof data.colors === 'string'
-          ? JSON.parse(data.colors)
-          : ['#111111'];
-        if (sizes.length > 0) setSelectedSize(sizes[0]);
-        if (colors.length > 0) setSelectedColor(colors[0]);
+        if (data && data.title) {
+          setProduct(data);
+          const sizes = Array.isArray(data.sizes)
+            ? data.sizes
+            : typeof data.sizes === 'string'
+            ? JSON.parse(data.sizes)
+            : ['XS', 'S', 'M', 'L'];
+          const colors = Array.isArray(data.colors)
+            ? data.colors
+            : typeof data.colors === 'string'
+            ? JSON.parse(data.colors)
+            : ['#111111'];
+          if (sizes.length > 0) setSelectedSize(sizes[0]);
+          if (colors.length > 0) setSelectedColor(colors[0]);
+        } else {
+          throw new Error('Fallback needed');
+        }
         setLoading(false);
       })
-      .catch((err) => {
-        console.warn('Backend fetch notice:', err.message);
+      .catch(() => {
         // Fallback to local catalog
-        const fallback = FALLBACK_CATALOG.find((p) => String(p.id) === String(id));
-        if (fallback) {
-          setProduct(fallback);
-          setSelectedSize(fallback.sizes[0] || 'Standard');
-          setSelectedColor(fallback.colors[0] || '#111111');
-        }
+        const fallback = FALLBACK_CATALOG.find((p) => String(p.id) === String(id)) || FALLBACK_CATALOG[0];
+        setProduct(fallback);
+        setSelectedSize(fallback.sizes[0] || 'Standard');
+        setSelectedColor(fallback.colors[0] || '#111111');
         setLoading(false);
       });
   }, [id]);

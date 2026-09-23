@@ -40,12 +40,12 @@ export default function CartPage() {
         Review your luxury selections before proceeding to checkout.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
         {/* Cart Item Rows */}
         <div className="lg:col-span-2 divide-y divide-neutral-200 border-t border-neutral-200">
           {cart.map((item, idx) => (
-            <div key={idx} className="py-6 flex gap-6 items-center">
-              <div className="w-20 sm:w-24 aspect-[3/4] bg-neutral-100 overflow-hidden shrink-0">
+            <div key={idx} className="py-5 sm:py-6 flex gap-3.5 sm:gap-6 items-start sm:items-center">
+              <div className="w-18 xs:w-20 sm:w-24 aspect-[3/4] bg-neutral-100 overflow-hidden shrink-0 border border-neutral-100">
                 <img
                   src={item.image_url}
                   alt={item.title}
@@ -54,14 +54,14 @@ export default function CartPage() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="text-xs font-medium uppercase tracking-[0.1em] text-neutral-900 mb-1 truncate">
+                <h3 className="text-xs font-medium uppercase tracking-[0.08em] sm:tracking-[0.1em] text-neutral-900 mb-1 truncate">
                   {item.title}
                 </h3>
                 <p className="text-[11px] text-neutral-500 uppercase tracking-wider mb-1">
                   Size: {item.selectedSize}
                 </p>
                 {item.selectedColor && (
-                  <div className="flex items-center gap-1.5 mb-3">
+                  <div className="flex items-center gap-1.5 mb-2">
                     <span className="text-[11px] text-neutral-500 uppercase tracking-wider">Color:</span>
                     <span
                       className="w-3 h-3 rounded-full border border-neutral-300"
@@ -69,23 +69,25 @@ export default function CartPage() {
                     />
                   </div>
                 )}
-                <span className="text-xs font-medium text-neutral-900">
+                <span className="text-xs font-medium text-neutral-900 block">
                   ₹{Number(item.price).toLocaleString('en-IN')}
                 </span>
 
                 {/* Quantity Buttons */}
                 <div className="flex items-center gap-3 mt-3">
-                  <div className="flex items-center border border-neutral-200">
+                  <div className="flex items-center border border-neutral-200 bg-white">
                     <button
                       onClick={() => updateQuantity(idx, item.quantity - 1)}
-                      className="px-2.5 py-1 text-xs hover:bg-neutral-100 transition"
+                      className="px-2.5 py-1 text-xs hover:bg-neutral-100 transition cursor-pointer"
+                      aria-label="Decrease quantity"
                     >
                       -
                     </button>
                     <span className="px-3 text-xs font-medium">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(idx, item.quantity + 1)}
-                      className="px-2.5 py-1 text-xs hover:bg-neutral-100 transition"
+                      className="px-2.5 py-1 text-xs hover:bg-neutral-100 transition cursor-pointer"
+                      aria-label="Increase quantity"
                     >
                       +
                     </button>
@@ -94,14 +96,15 @@ export default function CartPage() {
               </div>
 
               {/* Subtotal & Delete */}
-              <div className="text-right flex flex-col items-end justify-between h-24">
-                <span className="text-xs font-medium text-neutral-900">
+              <div className="text-right flex flex-col items-end justify-between self-stretch shrink-0">
+                <span className="text-xs font-semibold text-neutral-900">
                   ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                 </span>
                 <button
                   onClick={() => removeFromCart(idx)}
-                  className="text-neutral-400 hover:text-black transition p-1"
+                  className="text-neutral-400 hover:text-red-600 transition p-2 -mr-1 cursor-pointer"
                   title="Remove item"
+                  aria-label="Remove item"
                 >
                   <Trash2 className="w-4 h-4 stroke-[1.5]" />
                 </button>

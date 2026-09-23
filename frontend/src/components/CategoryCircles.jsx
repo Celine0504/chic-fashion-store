@@ -15,27 +15,27 @@ const categories = [
 
 export default function CategoryCircles() {
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-12 border-b border-neutral-100">
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 sm:gap-6 text-center">
+    <section className="max-w-7xl mx-auto px-3 sm:px-8 py-8 sm:py-12 border-b border-neutral-100">
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5 xs:gap-3.5 sm:gap-6 text-center">
         {categories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/shop?category=${cat.slug}`}
             className="group flex flex-col items-center"
           >
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-full overflow-hidden border border-neutral-200 mb-2.5 p-0.5 group-hover:border-neutral-900 group-hover:scale-105 transition duration-300">
+            <div className="relative w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-22 md:h-22 rounded-full overflow-hidden border border-neutral-200 mb-2 p-0.5 group-hover:border-neutral-900 group-hover:scale-105 transition duration-300">
               <img
                 src={cat.image}
                 alt={cat.name}
                 className="w-full h-full object-cover rounded-full"
               />
               {cat.badge && (
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 bg-white text-[8px] tracking-widest font-semibold px-1.5 py-0.5 rounded shadow-xs text-neutral-900">
+                <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 bg-white text-[7px] xs:text-[8px] tracking-widest font-semibold px-1 py-0.5 rounded shadow-xs text-neutral-900">
                   {cat.badge}
                 </span>
               )}
             </div>
-            <span className="text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-neutral-800 font-medium group-hover:text-neutral-500 transition">
+            <span className="text-[9px] xs:text-[10px] sm:text-[11px] tracking-[0.14em] sm:tracking-[0.18em] uppercase text-neutral-800 font-medium group-hover:text-neutral-500 transition truncate max-w-full">
               {cat.name}
             </span>
           </Link>

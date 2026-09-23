@@ -48,14 +48,14 @@ function ShopContent() {
         </div>
 
         {/* Quick Category Switcher */}
-        <div className="flex flex-wrap gap-2 text-xs tracking-wider uppercase">
+        <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap gap-2 text-[11px] sm:text-xs tracking-wider uppercase pb-1 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
           {['all', 'clothing', 'dresses', 'tops', 'bottoms', 'bags', 'shoes', 'accessories'].map((cat) => {
             const isActive = (!category && cat === 'all') || category === cat;
             return (
               <a
                 key={cat}
                 href={cat === 'all' ? '/shop' : `/shop?category=${cat}`}
-                className={`px-3 py-1.5 border transition ${
+                className={`shrink-0 px-3 py-1.5 border transition ${
                   isActive ? 'border-black bg-black text-white' : 'border-neutral-200 hover:border-black'
                 }`}
               >
@@ -84,7 +84,7 @@ function ShopContent() {
           </a>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
           {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

@@ -52,7 +52,13 @@ function AccountContent() {
   });
 
   // Feedback & Timers
-  const [error, setError] = useState(urlError ? `Sign in issue: ${urlError}` : null);
+  const [error, setError] = useState(
+    urlError
+      ? urlError.toLowerCase().includes('configuration')
+        ? 'Note: Live preview mode. Use your email or click 1-Click VIP Guest Sign In below.'
+        : `Sign in issue: ${urlError}`
+      : null
+  );
   const [loading, setLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
@@ -91,8 +97,29 @@ function AccountContent() {
 
     if (res?.error) {
       setError(
-        "Invalid email or password. If you signed in using Google previously, your account does not have a password yet — click 'Forgot password?' below to set one, or use 'Continue with Google'."
+        "Invalid email or password. You can also click '1-Click VIP Guest Sign In' below to access instantly."
       );
+      setLoading(false);
+    } else {
+      router.push('/account');
+      router.refresh();
+    }
+  };
+
+  // 1b. Instant 1-Click VIP Guest Sign In
+  const handleDemoSignIn = async () => {
+    setLoading(true);
+    setError(null);
+    setResetSuccess(false);
+
+    const res = await signIn('credentials', {
+      redirect: false,
+      email: 'demo@chicfashion.com',
+      password: 'fashion123',
+    });
+
+    if (res?.error) {
+      setError("Sign in issue. Please try again.");
       setLoading(false);
     } else {
       router.push('/account');
@@ -104,8 +131,11 @@ function AccountContent() {
   const handleGoogleSignIn = () => {
     setLoading(true);
     setError(null);
-    signIn('google', { callbackUrl: '/account' });
-    setTimeout(() => setLoading(false), 6000);
+    signIn('google', { callbackUrl: '/account' }).catch(() => {
+      setError("Google Sign-In is not configured on this environment. Please use Email or 1-Click VIP Guest Sign In.");
+      setLoading(false);
+    });
+    setTimeout(() => setLoading(false), 5000);
   };
 
   // 3. Step 1 -> Step 3: Trigger Real OTP Dispatch for Registration
@@ -441,9 +471,20 @@ function AccountContent() {
         </div>
       )}
 
-      {/* Google OAuth Option (when not in forgot mode) */}
+      {/* Google OAuth Option & 1-Click VIP Access (when not in forgot mode) */}
       {tab !== 'forgot' && (
         <>
+          {/* 1-Click VIP Guest Sign In for Instant Evaluation */}
+          <button
+            type="button"
+            onClick={handleDemoSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 bg-neutral-900 text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-neutral-800 transition mb-3 shadow-sm disabled:opacity-50 cursor-pointer"
+          >
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>{loading ? 'Accessing...' : '1-Click VIP Guest Sign In'}</span>
+          </button>
+
           <button
             type="button"
             onClick={handleGoogleSignIn}

@@ -24,18 +24,19 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-neutral-100">
       {/* Top Banner */}
-      <div className="bg-black text-white text-[10px] sm:text-[11px] uppercase tracking-[0.25em] py-2 px-4 flex justify-between items-center text-center">
-        <span className="cursor-pointer hover:opacity-75 transition">‹</span>
-        <span className="font-light">FREE SHIPPING ON ORDERS OVER ₹1,999</span>
-        <span className="cursor-pointer hover:opacity-75 transition">›</span>
+      <div className="bg-black text-white text-[9px] sm:text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.25em] py-2 px-3 flex justify-between items-center text-center">
+        <span className="cursor-pointer hover:opacity-75 transition px-1">‹</span>
+        <span className="font-light truncate">FREE SHIPPING ON ORDERS OVER ₹1,999</span>
+        <span className="cursor-pointer hover:opacity-75 transition px-1">›</span>
       </div>
 
       {/* Main Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3.5 sm:py-5 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-8 py-3 sm:py-5 flex items-center justify-between gap-2">
         {/* Left: Menu button */}
         <button
           onClick={() => setMenuOpen(true)}
-          className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-medium text-neutral-900 hover:text-neutral-500 transition"
+          className="flex items-center gap-2 p-1.5 -ml-1 text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-neutral-900 hover:text-neutral-500 transition cursor-pointer"
+          aria-label="Open navigation menu"
         >
           <Menu className="w-5 h-5 stroke-[1.5]" />
           <span className="hidden sm:inline">MENU</span>
@@ -44,31 +45,35 @@ export default function Navbar() {
         {/* Center: Brand Logo */}
         <Link
           href="/"
-          className="text-xl sm:text-2xl md:text-3xl font-serif tracking-[0.22em] text-neutral-900 font-semibold uppercase select-none text-center"
+          className="text-sm xs:text-base sm:text-2xl md:text-3xl font-serif tracking-[0.12em] sm:tracking-[0.22em] text-neutral-900 font-semibold uppercase select-none text-center truncate max-w-[180px] xs:max-w-[220px] sm:max-w-none"
         >
           CHIC FASHION STORE
         </Link>
 
         {/* Right: Icons (Account, Wishlist, Cart) */}
-        <div className="flex items-center gap-4 sm:gap-6 text-neutral-900">
-          <Link href="/account" title={activeUser ? `Signed in as ${activeUser.name || 'Member'}` : 'Sign In / Account'} className="relative hover:opacity-60 transition flex items-center">
+        <div className="flex items-center gap-2.5 sm:gap-6 text-neutral-900 shrink-0">
+          <Link
+            href="/account"
+            title={activeUser ? `Signed in as ${activeUser.name || 'Member'}` : 'Sign In / Account'}
+            className="relative p-1.5 hover:opacity-60 transition flex items-center"
+          >
             <User className="w-5 h-5 stroke-[1.5]" />
             {mounted && activeUser && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-500 rounded-full" />
+              <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-emerald-500 rounded-full" />
             )}
           </Link>
-          <Link href="/wishlist" title="Wishlist" className="relative hover:opacity-60 transition">
+          <Link href="/wishlist" title="Wishlist" className="relative p-1.5 hover:opacity-60 transition">
             <Heart className="w-5 h-5 stroke-[1.5]" />
             {mounted && wishlist.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-neutral-900 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
+              <span className="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
                 {wishlist.length}
               </span>
             )}
           </Link>
-          <Link href="/cart" title="Shopping Bag" className="relative hover:opacity-60 transition">
+          <Link href="/cart" title="Shopping Bag" className="relative p-1.5 hover:opacity-60 transition">
             <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
             {mounted && (
-              <span className="absolute -top-2 -right-2 bg-neutral-900 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
+              <span className="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
                 {cartCount}
               </span>
             )}
