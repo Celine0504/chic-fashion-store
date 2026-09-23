@@ -5,6 +5,8 @@ import { sendOtpEmail } from "@/lib/mail";
 import { validateEmail } from "@/lib/validateContact";
 import { hashOtp, checkRateLimit } from "@/lib/otpSecurity";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req) {
   try {
     const body = await req.json();

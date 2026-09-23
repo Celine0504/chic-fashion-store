@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { validateEmail } from "@/lib/validateContact";
 import { verifyOtpHash } from "@/lib/otpSecurity";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req) {
   try {
     const body = await req.json();
