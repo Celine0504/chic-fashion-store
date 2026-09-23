@@ -1,6 +1,6 @@
 # Chic Fashion Store
 
-> 🌐 **Live Demo Website:** [https://chic-fashion-store-pbkk.vercel.app](https://chic-fashion-store-pbkk.vercel.app)
+### **Live Demo Website**: [chic-fashion-store-pbkk.vercel.app](https://chic-fashion-store-pbkk.vercel.app)
 
 A full-stack, production-ready luxury e-commerce web platform built with **Next.js 14 (App Router)**, **React**, **Tailwind CSS**, **Node.js/Express**, and **MySQL** with **Prisma ORM**.
 
