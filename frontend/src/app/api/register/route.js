@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { 
+  findUserByEmail, 
+  getVerificationToken, 
+  deleteVerificationToken, 
+  createUser 
+} from "@/lib/userStore";
 import { validateEmail } from "@/lib/validateContact";
 import { verifyOtpHash } from "@/lib/otpSecurity";
 
@@ -46,9 +51,7 @@ export async function POST(req) {
     const email = validation.normalized;
 
     // 3. Check for existing user
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await findUserByEmail(email);
 
     if (existingUser) {
       return NextResponse.json(
@@ -58,12 +61,7 @@ export async function POST(req) {
     }
 
     // 4. Retrieve stored token and verify SHA-256 hash
-    const tokenRecord = await prisma.verificationToken.findFirst({
-      where: {
-        identifier: email,
-        expires: { gt: new Date() },
-      },
-    });
+    const tokenRecord = await getVerificationToken(email);
 
     if (!tokenRecord) {
       return NextResponse.json(
@@ -81,26 +79,16 @@ export async function POST(req) {
     }
 
     // 5. Delete token (prevents replay attacks)
-    await prisma.verificationToken.deleteMany({
-      where: { identifier: email },
-    });
+    await deleteVerificationToken(email);
 
     // 6. Securely hash password with bcrypt
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // 7. Create verified user record in MySQL
-    const user = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email,
-        emailVerified: new Date(),
-        password: hashedPassword,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+    // 7. Create verified user record
+    const user = await createUser({
+      name: name.trim(),
+      email,
+      password: hashedPassword,
     });
 
     return NextResponse.json(

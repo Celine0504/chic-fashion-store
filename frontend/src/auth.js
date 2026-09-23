@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { findUserByEmail } from "@/lib/userStore";
 
 const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
@@ -37,30 +38,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const rawLogin = credentials.email.trim();
-        let user = null;
+        let user = await findUserByEmail(rawLogin);
 
-        try {
-          if (prisma && typeof prisma.user?.findUnique === "function") {
-            if (rawLogin.includes("@")) {
-              user = await prisma.user.findUnique({
-                where: { email: rawLogin.toLowerCase() },
-              });
-            } else {
-              let phoneClean = rawLogin.replace(/[\s\-\(\)]/g, "");
-              if (!phoneClean.startsWith("+91")) {
-                if (phoneClean.startsWith("91") && phoneClean.length === 12) {
-                  phoneClean = `+${phoneClean}`;
-                } else {
-                  phoneClean = `+91${phoneClean}`;
-                }
+        if (!user && !rawLogin.includes("@")) {
+          try {
+            let phoneClean = rawLogin.replace(/[\s\-\(\)]/g, "");
+            if (!phoneClean.startsWith("+91")) {
+              if (phoneClean.startsWith("91") && phoneClean.length === 12) {
+                phoneClean = `+${phoneClean}`;
+              } else {
+                phoneClean = `+91${phoneClean}`;
               }
+            }
+            if (prisma && typeof prisma.user?.findUnique === "function") {
               user = await prisma.user.findUnique({
                 where: { phoneNumber: phoneClean },
               });
             }
-          }
-        } catch (dbErr) {
-          console.warn("Prisma user lookup error:", dbErr.message);
+          } catch (e) {}
         }
 
         if (!user) {

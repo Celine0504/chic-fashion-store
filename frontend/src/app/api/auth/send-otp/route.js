@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { prisma } from "@/lib/prisma";
+import { findUserByEmail, saveVerificationToken } from "@/lib/userStore";
 import { sendOtpEmail } from "@/lib/mail";
 import { validateEmail } from "@/lib/validateContact";
 import { hashOtp, checkRateLimit } from "@/lib/otpSecurity";
@@ -26,9 +26,7 @@ export async function POST(req) {
     const email = validation.normalized;
 
     // 2. Check user existence based on operation type
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await findUserByEmail(email);
 
     if (type === "register" && existingUser) {
       return NextResponse.json(
@@ -68,18 +66,8 @@ export async function POST(req) {
       );
     }
 
-    // 6. Store ONLY the SHA-256 hashed OTP in MySQL
-    await prisma.verificationToken.deleteMany({
-      where: { identifier: email },
-    });
-
-    await prisma.verificationToken.create({
-      data: {
-        identifier: email,
-        token: hashedOtp,
-        expires,
-      },
-    });
+    // 6. Store ONLY the SHA-256 hashed OTP
+    await saveVerificationToken(email, hashedOtp, expires);
 
     return NextResponse.json(
       {

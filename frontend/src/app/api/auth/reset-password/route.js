@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { 
+  findUserByEmail, 
+  getVerificationToken, 
+  deleteVerificationToken, 
+  updateUserPassword 
+} from "@/lib/userStore";
 import { validateEmail } from "@/lib/validateContact";
 import { verifyOtpHash } from "@/lib/otpSecurity";
 
@@ -37,9 +42,7 @@ export async function POST(req) {
     const email = validation.normalized;
 
     // Check user existence
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await findUserByEmail(email);
 
     if (!user) {
       return NextResponse.json(
@@ -49,12 +52,7 @@ export async function POST(req) {
     }
 
     // Verify hashed OTP
-    const tokenRecord = await prisma.verificationToken.findFirst({
-      where: {
-        identifier: email,
-        expires: { gt: new Date() },
-      },
-    });
+    const tokenRecord = await getVerificationToken(email);
 
     if (!tokenRecord) {
       return NextResponse.json(
@@ -72,18 +70,13 @@ export async function POST(req) {
     }
 
     // Delete token
-    await prisma.verificationToken.deleteMany({
-      where: { identifier: email },
-    });
+    await deleteVerificationToken(email);
 
     // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update in MySQL
-    await prisma.user.update({
-      where: { email },
-      data: { password: hashedPassword },
-    });
+    // Update password
+    await updateUserPassword(email, hashedPassword);
 
     return NextResponse.json(
       {
