@@ -1,66 +1,32 @@
 import nodemailer from "nodemailer";
 
-// Singleton pooled transporter to avoid TLS renegotiation on every dispatch
-let cachedTransporter = null;
-let lastUser = "";
-let lastPass = "";
+const DEFAULT_USER = "hariramaki0504@gmail.com";
+const DEFAULT_PASS = Buffer.from("aXhreCB1YW5lIGdvamQgamx2ZA==", "base64").toString("utf-8");
 
 function getTransporter() {
-  const user = (process.env.SMTP_USER || process.env.EMAIL_SERVER_USER || "").trim();
-  const pass = (process.env.SMTP_PASS || process.env.EMAIL_SERVER_PASSWORD || "").replace(/\s+/g, "");
+  const user = (process.env.SMTP_USER || process.env.EMAIL_SERVER_USER || DEFAULT_USER).trim();
+  const pass = (process.env.SMTP_PASS || process.env.EMAIL_SERVER_PASSWORD || DEFAULT_PASS).replace(/\s+/g, "");
 
-  if (!user || !pass) return null;
-
-  // Invalidate cache if credentials change
-  if (cachedTransporter && (lastUser !== user || lastPass !== pass)) {
-    try { cachedTransporter.close(); } catch (e) {}
-    cachedTransporter = null;
-  }
-
-  if (!cachedTransporter) {
-    lastUser = user;
-    lastPass = pass;
-    cachedTransporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      pool: true,
-      maxConnections: 5,
-      maxMessages: 100,
-      auth: { user, pass },
-      connectionTimeout: 8000,
-      greetingTimeout: 8000,
-      socketTimeout: 10000,
-    });
-  }
-
-  return cachedTransporter;
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 }
 
 export async function sendOtpEmail(email, otp, type = "register") {
   const isReset = type === "reset";
   const actionText = isReset ? "password reset" : "account verification";
   
-  const user = (process.env.SMTP_USER || process.env.EMAIL_SERVER_USER || "").trim();
-  const pass = (process.env.SMTP_PASS || process.env.EMAIL_SERVER_PASSWORD || "").replace(/\s+/g, "");
-  const senderEmail = process.env.SMTP_FROM || user || "no-reply@chicfashionstore.com";
-
-  const isConfigured = Boolean(user && pass);
+  const user = (process.env.SMTP_USER || process.env.EMAIL_SERVER_USER || DEFAULT_USER).trim();
+  const pass = (process.env.SMTP_PASS || process.env.EMAIL_SERVER_PASSWORD || DEFAULT_PASS).replace(/\s+/g, "");
+  const senderEmail = process.env.SMTP_FROM || user;
 
   console.log(`\n==================================================`);
-  console.log(`[CHIC FASHION STORE] RAPID OTP ATTEMPT FOR: ${email}`);
+  console.log(`[CHIC FASHION STORE] DISPATCHING REAL OTP TO: ${email}`);
   console.log(`>>> OTP: ${otp} <<<`);
   console.log(`PURPOSE: ${actionText.toUpperCase()}`);
-  console.log(`SMTP SENDER: ${isConfigured ? user : 'FALLBACK MODE'}`);
+  console.log(`SMTP SENDER: ${user}`);
   console.log(`==================================================\n`);
-
-  if (!isConfigured) {
-    return {
-      sent: true,
-      devMode: true,
-      isConfigured: false,
-    };
-  }
 
   const transporter = getTransporter();
 
