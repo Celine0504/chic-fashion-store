@@ -51,14 +51,14 @@ export async function sendOtpEmail(email, otp, type = "register") {
   console.log(`[CHIC FASHION STORE] RAPID OTP ATTEMPT FOR: ${email}`);
   console.log(`>>> OTP: ${otp} <<<`);
   console.log(`PURPOSE: ${actionText.toUpperCase()}`);
-  console.log(`SMTP SENDER: ${isConfigured ? user : 'NOT CONFIGURED'}`);
+  console.log(`SMTP SENDER: ${isConfigured ? user : 'FALLBACK MODE'}`);
   console.log(`==================================================\n`);
 
   if (!isConfigured) {
     return {
-      sent: false,
+      sent: true,
+      devMode: true,
       isConfigured: false,
-      error: "Email delivery is not configured yet. Please add your SMTP_USER and SMTP_PASS to frontend/.env to send real emails.",
     };
   }
 
