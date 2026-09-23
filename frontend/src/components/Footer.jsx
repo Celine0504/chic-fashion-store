@@ -5,9 +5,9 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-neutral-200 text-neutral-700 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-16 grid grid-cols-1 md:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
         {/* Brand */}
-        <div className="md:col-span-1">
+        <div className="sm:col-span-2 lg:col-span-1">
           <h3 className="font-serif tracking-[0.22em] text-lg font-bold text-neutral-900 mb-3 uppercase">
             CHIC FASHION STORE
           </h3>
