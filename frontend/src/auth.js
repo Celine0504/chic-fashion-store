@@ -1,12 +1,15 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
-const hasGoogleAuth = !!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
@@ -14,21 +17,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret:
     process.env.AUTH_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    "chic_fashion_store_secret_jwt_key_2026_super_secure_key",
+    "chicfashionstoresupersecretkey1234567890",
   pages: {
     signIn: "/account",
     error: "/account",
   },
   providers: [
-    ...(hasGoogleAuth
-      ? [
-          Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
-            allowDangerousEmailAccountLinking: true,
-          }),
-        ]
-      : []),
+    Google({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+      allowDangerousEmailAccountLinking: true,
+    }),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -41,25 +40,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         const rawLogin = credentials.email.trim();
-        const inputPass = String(credentials.password);
-
-        // 1. Instant Built-in Demo VIP Account (Works on Vercel live site without MySQL)
-        if (
-          (rawLogin.toLowerCase() === "demo@chicfashion.com" ||
-            rawLogin.toLowerCase() === "admin@chicfashion.com" ||
-            rawLogin.toLowerCase() === "guest@chicfashion.com") &&
-          inputPass === "fashion123"
-        ) {
-          return {
-            id: "demo-vip-user",
-            name: "VIP Guest Member",
-            email: rawLogin.toLowerCase(),
-            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
-          };
-        }
-
-        // 2. Query MySQL via Prisma if database is connected
         let user = null;
+
         try {
           if (prisma && typeof prisma.user?.findUnique === "function") {
             if (rawLogin.includes("@")) {
@@ -81,38 +63,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
           }
         } catch (dbErr) {
-          console.warn("Prisma DB lookup notice:", dbErr.message);
+          console.warn("Prisma user lookup error:", dbErr.message);
         }
 
-        if (user) {
-          if (!user.password) {
-            throw new Error("GoogleAccountNoPassword");
-          }
-
-          const isValid = await bcrypt.compare(inputPass, user.password);
-          if (!isValid) {
-            throw new Error("Incorrect password.");
-          }
-
-          return {
-            id: String(user.id),
-            name: user.name || "Valued Client",
-            email: user.email || user.phoneNumber,
-            image: user.image,
-          };
+        if (!user) {
+          throw new Error("No user found.");
         }
 
-        // 3. Fallback for live demo testing on Vercel if user created during session
-        if (inputPass.length >= 6) {
-          return {
-            id: `guest-${Date.now()}`,
-            name: rawLogin.split("@")[0].toUpperCase() || "Fashion Member",
-            email: rawLogin.toLowerCase(),
-            image: null,
-          };
+        if (!user.password) {
+          throw new Error("GoogleAccountNoPassword");
         }
 
-        throw new Error("Invalid email or password.");
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+
+        if (!isValid) {
+          throw new Error("Incorrect password.");
+        }
+
+        return {
+          id: String(user.id),
+          name: user.name,
+          email: user.email || user.phoneNumber,
+          image: user.image,
+        };
       },
     }),
   ],

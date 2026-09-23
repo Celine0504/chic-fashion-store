@@ -106,36 +106,11 @@ function AccountContent() {
     }
   };
 
-  // 1b. Instant 1-Click VIP Guest Sign In
-  const handleDemoSignIn = async () => {
-    setLoading(true);
-    setError(null);
-    setResetSuccess(false);
-
-    const res = await signIn('credentials', {
-      redirect: false,
-      email: 'demo@chicfashion.com',
-      password: 'fashion123',
-    });
-
-    if (res?.error) {
-      setError("Sign in issue. Please try again.");
-      setLoading(false);
-    } else {
-      router.push('/account');
-      router.refresh();
-    }
-  };
-
-  // 2. Google OAuth Sign In
+  // 2. Real Google OAuth Sign In
   const handleGoogleSignIn = () => {
     setLoading(true);
     setError(null);
-    signIn('google', { callbackUrl: '/account' }).catch(() => {
-      setError("Google Sign-In is not configured on this environment. Please use Email or 1-Click VIP Guest Sign In.");
-      setLoading(false);
-    });
-    setTimeout(() => setLoading(false), 5000);
+    signIn('google', { callbackUrl: '/account' });
   };
 
   // 3. Step 1 -> Step 3: Trigger Real OTP Dispatch for Registration
@@ -471,20 +446,9 @@ function AccountContent() {
         </div>
       )}
 
-      {/* Google OAuth Option & 1-Click VIP Access (when not in forgot mode) */}
+      {/* Google OAuth Option (when not in forgot mode) */}
       {tab !== 'forgot' && (
         <>
-          {/* 1-Click VIP Guest Sign In for Instant Evaluation */}
-          <button
-            type="button"
-            onClick={handleDemoSignIn}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 bg-neutral-900 text-white text-xs uppercase tracking-[0.2em] font-medium hover:bg-neutral-800 transition mb-3 shadow-sm disabled:opacity-50 cursor-pointer"
-          >
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>{loading ? 'Accessing...' : '1-Click VIP Guest Sign In'}</span>
-          </button>
-
           <button
             type="button"
             onClick={handleGoogleSignIn}
@@ -497,7 +461,7 @@ function AccountContent() {
               <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.03 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
               <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
             </svg>
-            <span>{loading ? 'Connecting...' : 'Continue with Google'}</span>
+            <span>{loading ? 'Connecting to Google...' : 'Continue with Google'}</span>
           </button>
 
           <div className="relative my-6 text-center">
