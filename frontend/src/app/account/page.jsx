@@ -52,19 +52,27 @@ function AccountContent() {
   });
 
   // Feedback & Timers
-  const [error, setError] = useState(
-    urlError
-      ? urlError.toLowerCase().includes('configuration')
-        ? 'Note: Live preview mode. Use your email or click 1-Click VIP Guest Sign In below.'
-        : `Sign in issue: ${urlError}`
-      : null
-  );
+  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [devOtpNotice, setDevOtpNotice] = useState(null);
   const [sessionTimeout, setSessionTimeout] = useState(false);
+
+  // Clear any stale ?error= parameter from address bar on mount
+  useEffect(() => {
+    if (urlError) {
+      if (urlError.toLowerCase().includes('configuration')) {
+        setError('Authentication service was updated. Please click "Continue with Google" again.');
+      } else {
+        setError(`Sign in notice: ${urlError}`);
+      }
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, '', '/account');
+      }
+    }
+  }, [urlError]);
 
   // Safety timer for initial session check
   useEffect(() => {
@@ -96,9 +104,7 @@ function AccountContent() {
     });
 
     if (res?.error) {
-      setError(
-        "Invalid email or password. You can also click '1-Click VIP Guest Sign In' below to access instantly."
-      );
+      setError("Invalid email or password. Please verify your credentials or register for an account.");
       setLoading(false);
     } else {
       router.push('/account');
@@ -110,6 +116,9 @@ function AccountContent() {
   const handleGoogleSignIn = () => {
     setLoading(true);
     setError(null);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', '/account');
+    }
     signIn('google', { callbackUrl: '/account' });
   };
 

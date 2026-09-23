@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
@@ -9,7 +8,6 @@ const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_I
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
@@ -26,7 +24,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: googleClientId,
       clientSecret: googleClientSecret,
-      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       name: "Credentials",
@@ -90,6 +87,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user?.email) {
+        try {
+          if (prisma && typeof prisma.user?.upsert === "function") {
+            await prisma.user.upsert({
+              where: { email: user.email.toLowerCase() },
+              update: {
+                name: user.name,
+                image: user.image,
+              },
+              create: {
+                email: user.email.toLowerCase(),
+                name: user.name,
+                image: user.image,
+              },
+            });
+          }
+        } catch (dbErr) {
+          console.warn("Prisma Google sync skipped (serverless mode):", dbErr.message);
+        }
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
