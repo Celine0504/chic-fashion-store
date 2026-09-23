@@ -1,10 +1,5 @@
 # Chic Fashion Store
 
-[![Vercel Live Demo](https://img.shields.io/badge/Vercel-Live_Demo-black?logo=vercel&style=for-the-badge)](https://chic-fashion-store-pbkk.vercel.app)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js&style=for-the-badge)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black&style=for-the-badge)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?logo=tailwind-css&style=for-the-badge)](https://tailwindcss.com/)
-
 > 🌐 **Live Demo Website:** [https://chic-fashion-store-pbkk.vercel.app](https://chic-fashion-store-pbkk.vercel.app)
 
 A full-stack, production-ready luxury e-commerce web platform built with **Next.js 14 (App Router)**, **React**, **Tailwind CSS**, **Node.js/Express**, and **MySQL** with **Prisma ORM**.
