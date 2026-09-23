@@ -13,6 +13,9 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'bcryptjs', '@auth/prisma-adapter'],
+  },
 };
 
 module.exports = nextConfig;
