@@ -8,22 +8,22 @@ A full-stack, production-ready luxury e-commerce web platform built with **Next.
 
 ##  Key Features
 
-- ** Enterprise Authentication**:
+- **Enterprise Authentication**:
   - Dual-layer login: One-click **Google OAuth** + **Email & Password** Credentials.
   - Passwords hashed using **bcrypt** (12 salt rounds).
   - Sessions managed via **NextAuth.js**.
-- ** Real-Time OTP Email Verification**:
+- **Real-Time OTP Email Verification**:
   - Cryptographically secure 6-digit numeric OTP generation (`crypto.randomInt`).
   - **Zero Plaintext Storage**: Token stored solely as a **SHA-256 hash** in MySQL with a 10-minute expiration.
   - **Timing-Safe Comparison**: `crypto.timingSafeEqual` prevents side-channel timing attacks.
   - **Algorithmic Typo & Fake Domain Interception**: Levenshtein distance check catches typos (e.g. `@gamil.com` ➡️ `@gmail.com`) and queries live DNS MX records to reject non-existent domains.
   - **High-Speed Dispatch**: Pooled SMTP connections deliver codes in **~3 seconds**.
-- ** Luxury E-Commerce Experience**:
+- **Luxury E-Commerce Experience**:
   - Responsive curated collections, category filtering (`dresses`, `outerwear`, `accessories`, `shoes`), and search.
   - Dynamic product detail views (`/product/[id]`) with image galleries, variant selection, and stock status.
   - Persistent shopping bag and wishlist powered by **React Context API** and LocalStorage.
   - Localized **INR (`₹`)** currency formatting.
-- ** Checkout & Orders**:
+- **Checkout & Orders**:
   - Order review, address collection, and checkout flow.
   - Relational schema tracking Orders and OrderItems in MySQL.
 
